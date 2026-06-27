@@ -1,0 +1,3062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePay - Trust in Every Touch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #7C3AED; /* Purple */
+            --primary-light: #A78BFA; /* Light Purple */
+            --primary-dark: #5B21B6; /* Dark Purple */
+            --secondary: #e2e8f0;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            background-color: #f0f8ff;
+        }
+        
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .page {
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn {
+            transition: all 0.3s;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .floating-speaker {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            background-color: #7C3AED;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .floating-speaker:active {
+            transform: scale(0.95);
+        }
+        
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
+        }
+        
+        .welcome-content {
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .welcome-buttons {
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            right: 0;
+            padding: 0 2rem;
+            z-index: 10;
+        }
+        
+        .shield-logo {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+        
+        .shield-outer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+            border-radius: 60% 60% 45% 45%;
+            box-shadow: 0 10px 20px rgba(30, 144, 255, 0.3);
+        }
+        
+        .shield-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            background: white;
+            border-radius: 60% 60% 45% 45%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .shield-icon {
+            color: #7C3AED;
+            font-size: 36px;
+        }
+        
+        .wave-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,202.7C672,203,768,181,864,181.3C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        
+        .language-card {
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .language-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(30, 144, 255, 0.05);
+        }
+        
+        .bank-card {
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .bank-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(30, 144, 255, 0.05);
+        }
+        
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .otp-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .fingerprint-animation {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.6; transform: scale(0.95); }
+        }
+        
+        .pin-input {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            font-weight: bold;
+            -webkit-text-security: disc;
+        }
+        
+        .pin-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .bottom-nav {
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .success-checkmark {
+            animation: scaleUp 0.5s ease-in-out;
+        }
+        
+        @keyframes scaleUp {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .contact-card {
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .contact-card.selected {
+            border-color: var(--primary);
+            background-color: rgba(30, 144, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container relative">
+        <!-- 1. Welcome Page -->
+        <div id="welcome-page" class="page active">
+            <div class="welcome-container">
+                <!-- Speaker button at top right -->
+                <button class="floating-speaker" onclick="speakWelcomeMessage()" id="speaker-btn">
+                    <i class="fas fa-volume-up" id="speaker-icon"></i>
+                </button>
+                
+                <div class="welcome-content">
+                    <div class="shield-logo mb-6">
+                        <div class="shield-outer"></div>
+                        <div class="shield-inner">
+                            <i class="fas fa-shield-alt shield-icon"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-3">SecurePay</h1>
+                    <p class="text-white text-xl font-medium">Trust in Every Touch</p>
+                </div>
+                
+                <div class="welcome-buttons">
+                    <button onclick="showPage('language-page')" class="btn w-full bg-white text-[#7C3AED] py-4 px-4 font-semibold">
+                        Get Started
+                    </button>
+                </div>
+                
+                <div class="wave-animation"></div>
+            </div>
+        </div>
+        
+        <!-- 2. Language Selection Page -->
+        <div id="language-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-lang">
+                <i class="fas fa-volume-up" id="speaker-icon-lang"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-[#7C3AED] mb-2">Select Language</h1>
+                    <p class="text-slate-500">Choose your preferred language</p>
+                </div>
+                
+                <div class="relative mb-6">
+                    <input type="text" id="language-search" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#1E90FF]" placeholder="Search languages..." onkeyup="searchLanguages()">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 w-full mb-8" id="languages-grid">
+                    <!-- Languages will be populated by JavaScript -->
+                </div>
+                
+                <button onclick="validateAndContinue('language-page', 'mobile-page')" class="btn w-full bg-[#7C3AED] hover:bg-[#5B21B6] text-white py-4 px-4 font-semibold">
+                    Continue
+                </button>
+            </div>
+        </div>
+        
+        <!-- 3. Mobile Number Entry Page -->
+        <div id="mobile-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-mobile">
+                <i class="fas fa-volume-up" id="speaker-icon-mobile"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Enter Mobile Number</h1>
+                    <p class="text-slate-500">We'll send you a verification code</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                    <div class="mb-6">
+                        <label for="mobile" class="block text-sm font-medium text-slate-600 mb-1">Mobile Number</label>
+                        <div class="flex">
+                            <select id="country-code" class="bg-slate-100 px-3 py-3 rounded-l-xl border border-slate-300 focus:outline-none focus:border-[#7C3AED]">
+                                <option value="+91" data-length="10">🇮🇳 +91</option>
+                                <option value="+1" data-length="10">🇺🇸 +1</option>
+                                <option value="+44" data-length="10">🇬🇧 +44</option>
+                                <option value="+86" data-length="11">🇨🇳 +86</option>
+                                <option value="+81" data-length="10">🇯🇵 +81</option>
+                                <option value="+49" data-length="11">🇩🇪 +49</option>
+                                <option value="+33" data-length="10">🇫🇷 +33</option>
+                                <option value="+39" data-length="10">🇮🇹 +39</option>
+                                <option value="+34" data-length="9">🇪🇸 +34</option>
+                                <option value="+7" data-length="10">🇷🇺 +7</option>
+                                <option value="+55" data-length="11">🇧🇷 +55</option>
+                                <option value="+61" data-length="9">🇦🇺 +61</option>
+                                <option value="+82" data-length="10">🇰🇷 +82</option>
+                                <option value="+65" data-length="8">🇸🇬 +65</option>
+                                <option value="+60" data-length="10">🇲🇾 +60</option>
+                                <option value="+66" data-length="9">🇹🇭 +66</option>
+                                <option value="+84" data-length="9">🇻🇳 +84</option>
+                                <option value="+62" data-length="11">🇮🇩 +62</option>
+                                <option value="+63" data-length="10">🇵🇭 +63</option>
+                                <option value="+971" data-length="9">🇦🇪 +971</option>
+                                <option value="+966" data-length="9">🇸🇦 +966</option>
+                            </select>
+                            <input type="tel" id="mobile" class="w-full px-4 py-3 border border-slate-300 rounded-r-xl focus:outline-none focus:border-[#7C3AED]" placeholder="Enter mobile number" oninput="updateMobileInput()">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded text-[#1E90FF] focus:ring-[#1E90FF]">
+                            <span class="ml-2 text-sm text-slate-600">I agree to the <a href="#" class="text-[#1E90FF]">Terms of Service</a> and <a href="#" class="text-[#1E90FF]">Privacy Policy</a></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button onclick="validateAndContinue('mobile-page', 'otp-page')" class="btn w-full bg-[#7C3AED] hover:bg-[#5B21B6] text-white py-4 px-4 font-semibold">
+                    Get OTP
+                </button>
+            </div>
+        </div>
+        
+        <!-- 4. OTP Verification Page -->
+        <div id="otp-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-otp">
+                <i class="fas fa-volume-up" id="speaker-icon-otp"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Verify OTP</h1>
+                    <p class="text-slate-500">Enter the 4-digit code sent to +91 9876543210</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                    <div class="flex justify-center space-x-3 mb-6">
+                        <input type="text" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 'otp-2')">
+                        <input type="text" id="otp-2" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 'otp-3')">
+                        <input type="text" id="otp-3" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 'otp-4')">
+                        <input type="text" id="otp-4" class="otp-input" maxlength="1">
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-slate-500 mb-2">Didn't receive the code?</p>
+                        <button class="text-[#1E90FF] font-medium">Resend OTP</button>
+                    </div>
+                </div>
+                
+                <button onclick="validateAndContinue('otp-page', 'bank-selection-page')" class="btn w-full bg-[#7C3AED] hover:bg-[#5B21B6] text-white py-4 px-4 font-semibold">
+                    Verify & Continue
+                </button>
+            </div>
+        </div>
+        
+        <!-- 5. Bank Selection Page -->
+        <div id="bank-selection-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-bank">
+                <i class="fas fa-volume-up" id="speaker-icon-bank"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="text-center mb-8 mt-6 px-6">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Select Your Bank</h1>
+                    <p class="text-slate-500">Choose your bank to link with SecurePay</p>
+                </div>
+                
+                <div class="relative mb-6 px-6">
+                    <input type="text" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#1E90FF]" placeholder="Search for your bank...">
+                    <i class="fas fa-search absolute left-10 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                </div>
+                
+                <div class="space-y-3 mb-8 px-6">
+                    <div class="bank-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectBank(this, 'sbi')">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mr-4">
+                            <span class="text-[#1E90FF] font-bold">SBI</span>
+                        </div>
+                        <div>
+                            <p class="font-medium">State Bank of India</p>
+                            <p class="text-xs text-slate-500">Most popular</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bank-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectBank(this, 'hdfc')">
+                        <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mr-4">
+                            <span class="text-red-600 font-bold">HDFC</span>
+                        </div>
+                        <p class="font-medium">HDFC Bank</p>
+                    </div>
+                    
+                    <div class="bank-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectBank(this, 'icici')">
+                        <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mr-4">
+                            <span class="text-orange-600 font-bold">ICICI</span>
+                        </div>
+                        <p class="font-medium">ICICI Bank</p>
+                    </div>
+                    
+                    <div class="bank-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectBank(this, 'axis')">
+                        <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mr-4">
+                            <span class="text-purple-600 font-bold">AXIS</span>
+                        </div>
+                        <p class="font-medium">Axis Bank</p>
+                    </div>
+                    
+                    <div class="bank-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectBank(this, 'kotak')">
+                        <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mr-4">
+                            <span class="text-red-600 font-bold">KMB</span>
+                        </div>
+                        <p class="font-medium">Kotak Mahindra Bank</p>
+                    </div>
+                </div>
+                
+                <div class="px-6 mt-auto mb-6">
+                    <button onclick="validateAndContinue('bank-selection-page', 'account-details-page')" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 6. Account Details Page -->
+        <div id="account-details-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-account">
+                <i class="fas fa-volume-up" id="speaker-icon-account"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Bank Account Details</h1>
+                    <p class="text-slate-500">Enter your State Bank of India account details</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                    <div class="mb-4">
+                        <label for="account-number" class="block text-sm font-medium text-slate-600 mb-1">Account Number</label>
+                        <input type="text" id="account-number" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#7C3AED]" placeholder="Enter your account number" maxlength="18" minlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 18)">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="confirm-account" class="block text-sm font-medium text-slate-600 mb-1">Confirm Account Number</label>
+                        <input type="text" id="confirm-account" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#7C3AED]" placeholder="Re-enter your account number" maxlength="18" minlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 18)">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="ifsc-code" class="block text-sm font-medium text-slate-600 mb-1">IFSC Code</label>
+                        <input type="text" id="ifsc-code" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#7C3AED]" placeholder="Enter IFSC code" maxlength="11" minlength="11" pattern="[A-Z]{4}[0-9]{7}" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 11)" style="text-transform: uppercase;">
+                        <p class="text-xs text-slate-500 mt-1">You can find IFSC code on your cheque book or bank passbook</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="account-holder" class="block text-sm font-medium text-slate-600 mb-1">Account Holder Name</label>
+                        <input type="text" id="account-holder" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#7C3AED]" placeholder="Enter account holder name" maxlength="50" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '').slice(0, 50)">
+                    </div>
+                </div>
+                
+                <button onclick="validateAndContinue('account-details-page', 'upi-pin-page')" class="btn w-full bg-[#6366F1] hover:bg-[#4338CA] text-white py-4 px-4 font-semibold">
+                    Link Account
+                </button>
+            </div>
+        </div>
+        
+        <!-- 7. UPI PIN Setup Page -->
+        <div id="upi-pin-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-pin">
+                <i class="fas fa-volume-up" id="speaker-icon-pin"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Create UPI PIN</h1>
+                    <p class="text-slate-500">Set a secure 4-digit PIN for transactions</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-600 mb-3">Enter 4-digit PIN</label>
+                        <div class="flex justify-center space-x-3">
+                            <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'pin-2')">
+                            <input type="password" id="pin-2" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'pin-3')">
+                            <input type="password" id="pin-3" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'pin-4')">
+                            <input type="password" id="pin-4" class="pin-input" maxlength="1">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-600 mb-3">Confirm 4-digit PIN</label>
+                        <div class="flex justify-center space-x-3">
+                            <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'confirm-pin-2')">
+                            <input type="password" id="confirm-pin-2" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'confirm-pin-3')">
+                            <input type="password" id="confirm-pin-3" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'confirm-pin-4')">
+                            <input type="password" id="confirm-pin-4" class="pin-input" maxlength="1">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-xl">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-[#1E90FF] mt-1 mr-3"></i>
+                            <p class="text-sm text-slate-700">Your UPI PIN is confidential. Never share it with anyone, including SecurePay support.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="validateAndContinue('upi-pin-page', 'biometric-setup-page-1')" class="btn w-full bg-[#6366F1] hover:bg-[#4338CA] text-white py-4 px-4 font-semibold">
+                    Set UPI PIN
+                </button>
+            </div>
+        </div>
+        
+
+
+        <!-- 9. Biometric Setup Page - Member 1 -->
+        <div id="biometric-setup-page-1" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-bio1">
+                <i class="fas fa-volume-up" id="speaker-icon-bio1"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Fingerprint Setup</h1>
+                    <p class="text-slate-500">Set up fingerprint for Member 1</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6 text-center">
+                    <div class="mb-6">
+                        <div class="w-32 h-32 rounded-full bg-blue-50 mx-auto flex items-center justify-center mb-4">
+                            <i class="fas fa-fingerprint text-[#1E90FF] text-5xl fingerprint-animation"></i>
+                        </div>
+                        <p class="text-slate-700">Place your finger on the sensor</p>
+                    </div>
+                    
+                    <div class="w-full bg-slate-200 h-2 rounded-full mb-4">
+                        <div class="bg-[#1E90FF] h-2 rounded-full" style="width: 0%" id="progress-bar-1"></div>
+                    </div>
+                    
+                    <p class="text-sm text-slate-500">Please keep your finger on the sensor until the scan is complete</p>
+                </div>
+                
+                <button onclick="simulateFingerprintScan(1)" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold">
+                    Scan Fingerprint
+                </button>
+            </div>
+        </div>
+        
+        <!-- 9. Biometric Setup Page - Member 2 -->
+        <div id="biometric-setup-page-2" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-bio2">
+                <i class="fas fa-volume-up" id="speaker-icon-bio2"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-[#1E90FF] mb-2">Fingerprint Setup</h1>
+                    <p class="text-slate-500">Set up fingerprint for Member 2</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6 text-center">
+                    <div class="mb-6">
+                        <div class="w-32 h-32 rounded-full bg-blue-50 mx-auto flex items-center justify-center mb-4">
+                            <i class="fas fa-fingerprint text-[#1E90FF] text-5xl fingerprint-animation"></i>
+                        </div>
+                        <p class="text-slate-700">Place your finger on the sensor</p>
+                    </div>
+                    
+                    <div class="w-full bg-slate-200 h-2 rounded-full mb-4">
+                        <div class="bg-[#1E90FF] h-2 rounded-full" style="width: 0%" id="progress-bar-2"></div>
+                    </div>
+                    
+                    <p class="text-sm text-slate-500">Please keep your finger on the sensor until the scan is complete</p>
+                </div>
+                
+                <button onclick="simulateFingerprintScan(2)" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold mb-4">
+                    Scan Fingerprint
+                </button>
+                
+                <button onclick="showPage('home-page')" class="btn w-full bg-white border border-[#1E90FF] text-[#1E90FF] py-4 px-4 font-semibold">
+                    Skip for Now
+                </button>
+            </div>
+        </div>
+        
+        <!-- 10. Home Page -->
+        <div id="home-page" class="page">
+            <div class="bg-[#7C3AED] p-6 text-white">
+                <button class="floating-speaker" onclick="toggleSpeaker()">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold" id="user-greeting">Hi, User</h1>
+                        <p class="text-blue-100">Welcome to SecurePay</p>
+                    </div>
+                    <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                        <span class="text-[#1E90FF] font-medium">A</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-medium text-slate-700">Total Balance</h2>
+                        <button id="toggle-balance" class="focus:outline-none">
+                            <i class="fas fa-eye-slash text-slate-500" id="balance-icon"></i>
+                        </button>
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="text-3xl font-bold" id="balance-text">••••••••</h3>
+                        <p class="text-slate-500">Available balance</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <button onclick="showPage('camera-permission-page')" class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-qrcode text-purple-600"></i>
+                        </div>
+                        <span class="text-xs font-medium">Scan QR</span>
+                    </button>
+                    
+                    <button onclick="showMyQRCodeModal()" class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-download text-green-600"></i>
+                        </div>
+                        <span class="text-xs font-medium">Receive</span>
+                    </button>
+                    
+                    <button onclick="showPage('self-account-page')" class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-full bg-[#6366F1] flex items-center justify-center mb-2">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <span class="text-xs font-medium">Self Account</span>
+                    </button>
+                    
+                    <button onclick="showPage('pay-bills-page')" class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-bolt text-amber-600"></i>
+                        </div>
+                        <span class="text-xs font-medium">Pay Bills</span>
+                    </button>
+                </div>
+                
+                <div class="mb-4 flex justify-between items-center">
+                    <h2 class="text-lg font-semibold">Recent Transactions</h2>
+                    <button class="text-[#1E90FF] text-sm font-medium">View All</button>
+                </div>
+                
+                <div class="space-y-3" id="recent-transactions">
+                    <div class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <span class="text-green-600 font-bold text-sm">K</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">From Krishnaveni</h3>
+                                <p class="text-xs text-slate-500">Today, 10:45 AM</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-green-600">+₹2,500</p>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <span class="text-red-600 font-bold text-sm">Y</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">To Yashwitha</h3>
+                                <p class="text-xs text-slate-500">Yesterday, 2:30 PM</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-₹1,200</p>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <span class="text-red-600 font-bold text-sm">N</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">To Naziya</h3>
+                                <p class="text-xs text-slate-500">22 May, 11:20 AM</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-₹800</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Navigation -->
+            <div class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-white bottom-nav p-4 flex justify-around items-center">
+                <button class="flex flex-col items-center">
+                    <i class="fas fa-home text-[#1E90FF]"></i>
+                    <span class="text-xs mt-1 font-medium">Home</span>
+                </button>
+                
+                <button onclick="showPage('history-page')" class="flex flex-col items-center">
+                    <i class="fas fa-history text-slate-400"></i>
+                    <span class="text-xs mt-1">History</span>
+                </button>
+                
+                <div class="relative -mt-8">
+                    <button onclick="showPage('send-money-page')" class="w-14 h-14 rounded-full bg-[#6366F1] flex items-center justify-center shadow-lg">
+                        <i class="fas fa-paper-plane text-white"></i>
+                    </button>
+                </div>
+                
+                <button onclick="showPage('profile-page')" class="flex flex-col items-center">
+                    <i class="fas fa-user text-slate-400"></i>
+                    <span class="text-xs mt-1">Profile</span>
+                </button>
+                
+                <button onclick="showPage('help-page')" class="flex flex-col items-center">
+                    <i class="fas fa-question-circle text-slate-400"></i>
+                    <span class="text-xs mt-1">Help</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 11. Send Money - Select Contact Page -->
+        <div id="send-money-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-send">
+                <i class="fas fa-volume-up" id="speaker-icon-send"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#7C3AED] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('home-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Send Money</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="relative mb-6">
+                        <input type="text" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-[#1E90FF]" placeholder="Search by name, UPI ID or mobile">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    </div>
+                    
+                    <h2 class="text-lg font-semibold mb-4">Recent Contacts</h2>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'abhinandana', 'Abhinandana', 'abhinandana@okaxis')">
+                            <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4">
+                                <span class="text-purple-600 font-bold">A</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Abhinandana</p>
+                                <p class="text-xs text-slate-500">abhinandana@okaxis</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'krishnaveni', 'Krishnaveni', 'krishnaveni@ybl')">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                                <span class="text-blue-600 font-bold">K</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Krishnaveni</p>
+                                <p class="text-xs text-slate-500">krishnaveni@ybl</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'pravalika', 'Pravalika', 'pravalika@oksbi')">
+                            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                                <span class="text-green-600 font-bold">P</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Pravalika</p>
+                                <p class="text-xs text-slate-500">pravalika@oksbi</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'yashwitha', 'Yashwitha', 'yashwitha@paytm')">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mr-4">
+                                <span class="text-amber-600 font-bold">Y</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Yashwitha</p>
+                                <p class="text-xs text-slate-500">yashwitha@paytm</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'naziya', 'Naziya', 'naziya@okhdfc')">
+                            <div class="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center mr-4">
+                                <span class="text-pink-600 font-bold">N</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Naziya</p>
+                                <p class="text-xs text-slate-500">naziya@okhdfc</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'sreeja', 'Sreeja', 'sreeja@okicici')">
+                            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
+                                <span class="text-indigo-600 font-bold">S</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Sreeja</p>
+                                <p class="text-xs text-slate-500">sreeja@okicici</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'huriya', 'Huriya', 'huriya@okaxis')">
+                            <div class="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center mr-4">
+                                <span class="text-teal-600 font-bold">H</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Huriya</p>
+                                <p class="text-xs text-slate-500">huriya@okaxis</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-card p-4 rounded-xl shadow-sm bg-white flex items-center cursor-pointer" onclick="selectContact(this, 'juveriya', 'Juveriya', 'juveriya@ybl')">
+                            <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mr-4">
+                                <span class="text-rose-600 font-bold">J</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">Juveriya</p>
+                                <p class="text-xs text-slate-500">juveriya@ybl</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="showPage('enter-amount-page')" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold mt-auto">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 12. Enter Amount Page -->
+        <div id="enter-amount-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-amount">
+                <i class="fas fa-volume-up" id="speaker-icon-amount"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('send-money-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Enter Amount</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex flex-col flex-grow">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-purple-600 font-bold text-2xl" id="recipient-initial">P</span>
+                        </div>
+                        <h2 class="text-xl font-bold" id="recipient-name">Select Contact First</h2>
+                        <p class="text-slate-500" id="recipient-upi">No contact selected</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                        <label for="amount" class="block text-sm font-medium text-slate-600 mb-1">Amount</label>
+                        <div class="flex items-center">
+                            <span class="text-2xl font-bold mr-2">₹</span>
+                            <input type="text" id="amount" class="w-full text-3xl font-bold border-none focus:outline-none focus:ring-0" placeholder="0" inputmode="numeric">
+                        </div>
+                        <div class="border-t border-slate-200 mt-4 pt-4">
+                            <p class="text-slate-500">Available balance: <span class="font-medium">₹24,500.75</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-4 shadow-md w-full mb-6">
+                        <label for="note" class="block text-sm font-medium text-slate-600 mb-1">Add a note (optional)</label>
+                        <input type="text" id="note" class="w-full border-none focus:outline-none focus:ring-0" placeholder="What's this for?">
+                    </div>
+                    
+                    <button onclick="proceedToPayment()" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold mt-auto">
+                        Pay
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 13. Verify PIN Page -->
+        <div id="verify-pin-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-verify">
+                <i class="fas fa-volume-up" id="speaker-icon-verify"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('enter-amount-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Enter UPI PIN</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex flex-col flex-grow">
+                    <div class="text-center mb-8">
+                        <h2 class="text-xl font-bold" id="payment-amount">Paying ₹0 to</h2>
+                        <p class="text-slate-500" id="payment-recipient">Select contact first</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-slate-600 mb-3 text-center">Enter your 4-digit UPI PIN</label>
+                            <div class="flex justify-center space-x-3">
+                                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'verify-pin-2')">
+                                <input type="password" id="verify-pin-2" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'verify-pin-3')">
+                                <input type="password" id="verify-pin-3" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 'verify-pin-4')">
+                                <input type="password" id="verify-pin-4" class="pin-input" maxlength="1">
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button class="text-[#1E90FF] font-medium">Forgot UPI PIN?</button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="verifyUPIPin()" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold">
+                        Verify PIN
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 14. Fingerprint Authentication Page -->
+        <div id="fingerprint-auth-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-auth">
+                <i class="fas fa-volume-up" id="speaker-icon-auth"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('verify-pin-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Fingerprint Authentication</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex flex-col items-center justify-center flex-grow">
+                    <div class="text-center mb-8">
+                        <h2 class="text-xl font-bold">Authorize Payment</h2>
+                        <p class="text-slate-500" id="auth-payment-details">₹0 to Select contact</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6 text-center">
+                        <div class="mb-6">
+                            <div class="w-32 h-32 rounded-full bg-blue-50 mx-auto flex items-center justify-center mb-4">
+                                <i class="fas fa-fingerprint text-[#1E90FF] text-5xl fingerprint-animation"></i>
+                            </div>
+                            <p class="text-slate-700">Place your finger on the sensor</p>
+                        </div>
+                        
+                        <div class="w-full bg-slate-200 h-2 rounded-full mb-4">
+                            <div class="bg-[#1E90FF] h-2 rounded-full" style="width: 0%" id="auth-progress-bar"></div>
+                        </div>
+                        
+                        <p class="text-sm text-slate-500">Please keep your finger on the sensor until the authentication is complete</p>
+                    </div>
+                    
+                    <button onclick="simulateAuthFingerprint()" class="btn w-full bg-[#1E90FF] hover:bg-[#0066CC] text-white py-4 px-4 font-semibold">
+                        Authenticate
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 15. Payment Success Page -->
+        <div id="payment-success-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-success">
+                <i class="fas fa-volume-up" id="speaker-icon-success"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-bold">Payment Successful</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6 flex flex-col items-center justify-center flex-grow">
+                    <div class="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-6 success-checkmark">
+                        <i class="fas fa-check text-green-600 text-4xl"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-center mb-2">₹500 Sent Successfully!</h2>
+                    <p class="text-slate-500 text-center mb-8">Your payment to Priya Sharma has been completed</p>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">Amount</p>
+                            <p class="font-bold">₹500.00</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">To</p>
+                            <p class="font-bold">Priya Sharma</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">UPI ID</p>
+                            <p class="font-bold">priya@okaxis</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">Transaction ID</p>
+                            <p class="font-bold">SP12345678</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <p class="text-slate-500">Date & Time</p>
+                            <p class="font-bold">25 May, 11:45 AM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4 w-full">
+                        <button onclick="sharePaymentReceipt()" class="btn flex-1 bg-white border border-[#1E90FF] text-[#1E90FF] py-3 px-4">
+                            <i class="fas fa-share-alt mr-2"></i> Share
+                        </button>
+                        
+                        <button onclick="showPage('home-page')" class="btn flex-1 bg-[#1E90FF] hover:bg-[#0066CC] text-white py-3 px-4">
+                            Done
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Self Account Page -->
+        <div id="self-account-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-self">
+                <i class="fas fa-volume-up" id="speaker-icon-self"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('home-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Self Account</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 rounded-full bg-[#1E90FF] flex items-center justify-center mx-auto mb-4">
+                                <span class="text-white font-bold text-2xl" id="self-account-initial">A</span>
+                            </div>
+                            <h2 class="text-xl font-bold" id="self-account-name">Account Holder</h2>
+                            <p class="text-slate-500" id="self-account-upi">user@securepay</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600">Account Number</span>
+                                <span class="font-medium">**1234</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600">Bank</span>
+                                <span class="font-medium">State Bank of India</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600">IFSC Code</span>
+                                <span class="font-medium">SBIN0001234</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button onclick="showMyQRCode()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-qrcode text-[#1E90FF] mr-3"></i>
+                                <span>Show QR Code</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                        
+                        <button onclick="shareUPIID()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-share-alt text-[#1E90FF] mr-3"></i>
+                                <span>Share UPI ID</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                        
+                        <button onclick="editProfile()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-edit text-[#7C3AED] mr-3"></i>
+                                <span>Edit Profile</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                        
+                        <button onclick="addAnotherBankAccount()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-plus-circle text-[#7C3AED] mr-3"></i>
+                                <span>Add Another Bank Account</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pay Bills Page -->
+        <div id="pay-bills-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('home-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Pay Bills</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="payBill('Mobile Recharge')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-mobile-alt text-green-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Mobile Recharge</span>
+                        </button>
+                        
+                        <button onclick="payBill('DTH Recharge')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-wifi text-orange-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">DTH Recharge</span>
+                        </button>
+                        
+                        <button onclick="payBill('Electric Bill')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-bolt text-yellow-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Electric Bill</span>
+                        </button>
+                        
+                        <button onclick="payBill('Water Bill')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-tint text-cyan-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Water Bill</span>
+                        </button>
+<button onclick="payBill('Gas Bill')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-fire text-red-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Gas Bill</span>
+                        </button>
+                        
+                        <button onclick="payBill('Insurance Premium')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Insurance</span>
+                        </button>
+                        
+                        <button onclick="payBill('Fast Track Toll')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-road text-indigo-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Fast Track</span>
+                        </button>
+                        
+                        <button onclick="payBill('Mutual Fund SIP')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-chart-line text-purple-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Mutual Funds</span>
+                        </button>
+                        
+                        <button onclick="payBill('Education Fee')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-graduation-cap text-pink-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Education Fee</span>
+                        </button>
+                        
+                        <button onclick="payBill('Credit Card Bill')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-credit-card text-teal-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Credit Card</span>
+                        </button>
+                        
+                        <button onclick="payBill('Rent Payment')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-home text-amber-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Rent Payment</span>
+                        </button>
+                        
+                        <button onclick="payBill('Loan EMI')" class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+                            <div class="w-16 h-16 rounded-full bg-lime-100 flex items-center justify-center mb-3">
+                                <i class="fas fa-car text-lime-600 text-2xl"></i>
+                            </div>
+                            <span class="font-medium">Loan EMI</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Page -->
+        <div id="history-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('home-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Transaction History</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex space-x-2 mb-6">
+                        <button onclick="filterTransactions('all')" class="px-4 py-2 bg-[#1E90FF] text-white rounded-lg font-medium" id="filter-all">All</button>
+                        <button onclick="filterTransactions('sent')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg" id="filter-sent">Sent</button>
+                        <button onclick="filterTransactions('received')" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg" id="filter-received">Received</button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                    <span class="text-green-600 font-bold text-sm">K</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">From Krishnaveni</h3>
+                                    <p class="text-xs text-slate-500">Today, 10:45 AM</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-green-600">+₹2,500</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                    <span class="text-red-600 font-bold text-sm">Y</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">To Yashwitha</h3>
+                                    <p class="text-xs text-slate-500">Yesterday, 2:30 PM</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-red-600">-₹1,200</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                    <span class="text-red-600 font-bold text-sm">N</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">To Naziya</h3>
+                                    <p class="text-xs text-slate-500">22 May, 11:20 AM</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-red-600">-₹800</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Page -->
+        <div id="profile-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('home-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Profile</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="text-center mb-8">
+                        <div class="w-24 h-24 rounded-full bg-[#1E90FF] flex items-center justify-center mx-auto mb-4">
+                            <span class="text-white font-bold text-3xl">A</span>
+                        </div>
+                        <h2 class="text-2xl font-bold">Abhi</h2>
+                        <p class="text-slate-500">abhi@securepay</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <button onclick="showPersonalInfo()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-user text-slate-400 mr-3"></i>
+                                <span>Personal Information</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                        
+                        <button onclick="showSecuritySettings()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-shield-alt text-slate-400 mr-3"></i>
+                                <span>Security Settings</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                        
+                        <button onclick="showNotificationSettings()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-bell text-slate-400 mr-3"></i>
+                                <span>Notifications</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                        
+                        <button onclick="showAppSettings()" class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-cog text-slate-400 mr-3"></i>
+                                <span>Settings</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Camera Permission Page -->
+        <div id="camera-permission-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()" id="speaker-btn-camera">
+                <i class="fas fa-volume-up" id="speaker-icon-camera"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center min-h-screen p-6">
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-camera text-purple-600 text-4xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-[#7C3AED] mb-2">Camera Access Required</h1>
+                    <p class="text-slate-500">We need camera permission to scan QR codes for payments</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-md w-full mb-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-qrcode text-green-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">Scan QR Codes</h3>
+                                <p class="text-sm text-slate-600">Quickly scan merchant QR codes to make payments</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-shield-alt text-blue-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">Secure & Private</h3>
+                                <p class="text-sm text-slate-600">Camera is only used for QR scanning, no images are stored</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-bolt text-orange-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-slate-800">Instant Payments</h3>
+                                <p class="text-sm text-slate-600">Make payments instantly by scanning QR codes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full space-y-3">
+                    <button onclick="requestCameraPermissionAndScan()" class="btn w-full bg-[#7C3AED] hover:bg-[#5B21B6] text-white py-4 px-4 font-semibold">
+                        <i class="fas fa-camera mr-2"></i>
+                        Allow Camera Access
+                    </button>
+                    
+                    <button onclick="showPage('home-page')" class="btn w-full bg-white border border-slate-300 text-slate-600 py-3 px-4 font-medium">
+                        <i class="fas fa-times mr-2"></i>
+                        Not Now
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-xs text-slate-500">You can change camera permissions anytime in your browser settings</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Page -->
+        <div id="help-page" class="page">
+            <button class="floating-speaker" onclick="toggleSpeaker()">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            
+            <div class="flex flex-col min-h-screen">
+                <div class="bg-[#1E90FF] p-6 text-white">
+                    <div class="flex items-center">
+                        <button onclick="showPage('home-page')" class="mr-4">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-bold">Help & Support</h1>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <button onclick="showFAQ()" class="w-full bg-white p-4 rounded-xl shadow-sm text-left">
+                            <h3 class="font-semibold mb-2">Frequently Asked Questions</h3>
+                            <p class="text-slate-600 text-sm">Find answers to common questions</p>
+                        </button>
+                        
+                        <button onclick="contactSupport()" class="w-full bg-white p-4 rounded-xl shadow-sm text-left">
+                            <h3 class="font-semibold mb-2">Contact Support</h3>
+                            <p class="text-slate-600 text-sm">Get help from our support team</p>
+                        </button>
+                        
+                        <button onclick="reportIssue()" class="w-full bg-white p-4 rounded-xl shadow-sm text-left">
+                            <h3 class="font-semibold mb-2">Report an Issue</h3>
+                            <p class="text-slate-600 text-sm">Report problems or bugs</p>
+                        </button>
+                        
+                        <button onclick="showUserGuide()" class="w-full bg-white p-4 rounded-xl shadow-sm text-left">
+                            <h3 class="font-semibold mb-2">User Guide</h3>
+                            <p class="text-slate-600 text-sm">Learn how to use SecurePay</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- QR Code Modal -->
+        <div id="qr-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-6 m-4 max-w-sm w-full">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-4">My QR Code</h3>
+                    <div class="w-48 h-48 bg-gray-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
+                        <div class="w-40 h-40 bg-white rounded-lg flex items-center justify-center">
+                            <svg width="160" height="160" viewBox="0 0 160 160">
+                                <!-- QR Code pattern -->
+                                <rect x="0" y="0" width="20" height="20" fill="black"/>
+                                <rect x="20" y="0" width="20" height="20" fill="white"/>
+                                <rect x="40" y="0" width="20" height="20" fill="black"/>
+                                <rect x="60" y="0" width="20" height="20" fill="white"/>
+                                <rect x="80" y="0" width="20" height="20" fill="black"/>
+                                <rect x="100" y="0" width="20" height="20" fill="white"/>
+                                <rect x="120" y="0" width="20" height="20" fill="black"/>
+                                <rect x="140" y="0" width="20" height="20" fill="white"/>
+                                <!-- Add more QR pattern rectangles for visual effect -->
+                                <rect x="0" y="20" width="20" height="20" fill="white"/>
+                                <rect x="20" y="20" width="20" height="20" fill="black"/>
+                                <rect x="40" y="20" width="20" height="20" fill="white"/>
+                                <rect x="60" y="20" width="20" height="20" fill="black"/>
+                                <rect x="80" y="20" width="20" height="20" fill="white"/>
+                                <rect x="100" y="20" width="20" height="20" fill="black"/>
+                                <rect x="120" y="20" width="20" height="20" fill="white"/>
+                                <rect x="140" y="20" width="20" height="20" fill="black"/>
+                                <!-- Continue pattern -->
+                                <rect x="0" y="40" width="20" height="20" fill="black"/>
+                                <rect x="20" y="40" width="20" height="20" fill="white"/>
+                                <rect x="40" y="40" width="20" height="20" fill="black"/>
+                                <rect x="60" y="40" width="20" height="20" fill="white"/>
+                                <rect x="80" y="40" width="20" height="20" fill="black"/>
+                                <rect x="100" y="40" width="20" height="20" fill="white"/>
+                                <rect x="120" y="40" width="20" height="20" fill="black"/>
+                                <rect x="140" y="40" width="20" height="20" fill="white"/>
+                                <!-- Add corner squares for QR code look -->
+                                <rect x="0" y="0" width="60" height="60" fill="none" stroke="black" stroke-width="4"/>
+                                <rect x="100" y="0" width="60" height="60" fill="none" stroke="black" stroke-width="4"/>
+                                <rect x="0" y="100" width="60" height="60" fill="none" stroke="black" stroke-width="4"/>
+                                <rect x="20" y="20" width="20" height="20" fill="black"/>
+                                <rect x="120" y="20" width="20" height="20" fill="black"/>
+                                <rect x="20" y="120" width="20" height="20" fill="black"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <p class="font-semibold" id="qr-name">User Name</p>
+                        <p class="text-sm text-gray-600" id="qr-upi">user@securepay</p>
+                        <p class="text-sm text-gray-600" id="qr-amount" style="display: none;"></p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="shareQRCode()" class="flex-1 bg-[#7C3AED] text-white py-2 px-4 rounded-lg">
+                            <i class="fas fa-share-alt mr-2"></i>Share
+                        </button>
+                        <button onclick="downloadQRCode()" class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg">
+                            <i class="fas fa-download mr-2"></i>Save
+                        </button>
+                    </div>
+                    <button onclick="closeQRModal()" class="mt-3 w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Edit Modal -->
+        <div id="profile-edit-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-6 m-4 max-w-sm w-full">
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold">Edit Profile</h3>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+                        <input type="text" id="edit-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#7C3AED]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="edit-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#7C3AED]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-full bg-[#7C3AED] flex items-center justify-center">
+                                <span class="text-white font-bold" id="edit-initial">A</span>
+                            </div>
+                            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm">Change Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                    <button onclick="saveProfile()" class="flex-1 bg-[#7C3AED] text-white py-2 px-4 rounded-lg">Save</button>
+                    <button onclick="closeProfileEditModal()" class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let speakerEnabled = true;
+        let selectedContactInfo = {};
+        let currentLanguage = 'english';
+        let userUPIPin = ''; // Store the user's UPI PIN
+        
+        // Multilingual text content
+        const translations = {
+            english: {
+                welcome: 'Welcome to SecurePay. Trust in Every Touch. Tap the Get Started button to begin.',
+                selectLanguage: 'Please select your preferred language to continue.',
+                enterMobile: 'Please enter your mobile number to continue. We will send a one-time password for verification.',
+                enterOTP: 'Please enter the 4-digit OTP sent to your mobile number for verification.',
+                selectBank: 'Please select your bank to continue with the account setup.',
+                accountDetails: 'Please enter your bank account details. Enter your account number and IFSC code to link your bank account.',
+                createPin: 'Create your 4-digit UPI PIN. This PIN will be used for all your transactions. Keep it confidential and do not share with anyone.',
+                fingerprint: 'Set up fingerprint authentication. Place your finger on the fingerprint sensor to register.',
+                homeWelcome: 'Welcome to SecurePay. Your current balance is hidden. You have recent transactions.',
+                sendMoney: 'Select a contact to send money to or enter a new UPI ID or mobile number.',
+                enterAmount: 'Enter the amount you want to send.',
+                verifyPin: 'Please enter your 4-digit UPI PIN to authorize the payment.',
+                authFingerprint: 'Please place your finger on the fingerprint sensor to authorize the payment.',
+                paymentSuccess: 'Payment successful! You have sent money successfully.',
+                voiceEnabled: 'Voice assistance enabled',
+                voiceDisabled: 'Voice assistance disabled'
+            },
+            hindi: {
+                welcome: 'सिक्योरपे में आपका स्वागत है। हर स्पर्श में विश्वास। शुरू करने के लिए गेट स्टार्टेड बटन दबाएं।',
+                selectLanguage: 'कृपया जारी रखने के लिए अपनी पसंदीदा भाषा चुनें।',
+                enterMobile: 'कृपया जारी रखने के लिए अपना मोबाइल नंबर दर्ज करें। हम सत्यापन के लिए एक वन-टाइम पासवर्ड भेजेंगे।',
+                enterOTP: 'कृपया अपने मोबाइल नंबर पर भेजा गया 4-अंकीय ओटीपी दर्ज करें।',
+                selectBank: 'कृपया खाता सेटअप जारी रखने के लिए अपना बैंक चुनें।',
+                accountDetails: 'कृपया अपने बैंक खाते का विवरण दर्ज करें। अपना खाता नंबर और आईएफएससी कोड दर्ज करें।',
+                createPin: 'अपना 4-अंकीय यूपीआई पिन बनाएं। यह पिन आपके सभी लेनदेन के लिए उपयोग किया जाएगा।',
+                fingerprint: 'फिंगरप्रिंट प्रमाणीकरण सेट करें। रजिस्टर करने के लिए अपनी उंगली सेंसर पर रखें।',
+                homeWelcome: 'सिक्योरपे में आपका स्वागत है। आपका वर्तमान बैलेंस छुपा हुआ है।',
+                sendMoney: 'पैसे भेजने के लिए एक संपर्क चुनें या नया यूपीआई आईडी दर्ज करें।',
+                enterAmount: 'भेजने की राशि दर्ज करें।',
+                verifyPin: 'भुगतान को अधिकृत करने के लिए अपना 4-अंकीय यूपीआई पिन दर्ज करें।',
+                authFingerprint: 'भुगतान को अधिकृत करने के लिए अपनी उंगली फिंगरप्रिंट सेंसर पर रखें।',
+                paymentSuccess: 'भुगतान सफल! आपने सफलतापूर्वक पैसे भेजे हैं।',
+                voiceEnabled: 'आवाज सहायता सक्षम',
+                voiceDisabled: 'आवाज सहायता अक्षम'
+            },
+            tamil: {
+                welcome: 'SecurePay க்கு வரவேற்கிறோம். ஒவ்வொரு தொடுதலிலும் நம்பிக்கை। தொடங்க Get Started பொத்தானை அழுத்தவும்.',
+                selectLanguage: 'தொடர உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்.',
+                enterMobile: 'தொடர உங்கள் மொபைல் எண்ணை உள்ளிடவும். சரிபார்ப்புக்காக ஒரு முறை கடவுச்சொல் அனுப்புவோம்.',
+                enterOTP: 'உங்கள் மொபைல் எண்ணுக்கு அனுப்பப்பட்ட 4-இலக்க OTP ஐ உள்ளிடவும்.',
+                selectBank: 'கணக்கு அமைப்பைத் தொடர உங்கள் வங்கியைத் தேர்ந்தெடுக்கவும்.',
+                accountDetails: 'உங்கள் வங்கிக் கணக்கு விவரங்களை உள்ளிடவும். உங்கள் கணக்கு எண் மற்றும் IFSC குறியீட்டை உள்ளிடவும்.',
+                createPin: 'உங்கள் 4-இலக்க UPI PIN ஐ உருவாக்கவும். இந்த PIN உங்கள் அனைத்து பரிவர்த்தனைகளுக்கும் பயன்படுத்தப்படும்.',
+                fingerprint: 'கைரேகை அங்கீகாரத்தை அமைக்கவும். பதிவு செய்ய உங்கள் விரலை சென்சாரில் வைக்கவும்.',
+                homeWelcome: 'SecurePay க்கு வரவேற்கிறோம். உங்கள் தற்போதைய இருப்பு மறைக்கப்பட்டுள்ளது.',
+                sendMoney: 'பணம் அனுப்ப ஒரு தொடர்பைத் தேர்ந்தெடுக்கவும் அல்லது புதிய UPI ID ஐ உள்ளிடவும்.',
+                enterAmount: 'அனுப்ப வேண்டிய தொகையை உள்ளிடவும்.',
+                verifyPin: 'பணம் செலுத்துவதை அங்கீகரிக்க உங்கள் 4-இலக்க UPI PIN ஐ உள்ளிடவும்.',
+                authFingerprint: 'பணம் செலுத்துவதை அங்கீகரிக்க உங்கள் விரலை கைரேகை சென்சாரில் வைக்கவும்.',
+                paymentSuccess: 'பணம் செலுத்துதல் வெற்றிகரமாக! நீங்கள் வெற்றிகரமாக பணம் அனுப்பியுள்ளீர்கள்.',
+                voiceEnabled: 'குரல் உதவி இயக்கப்பட்டது',
+                voiceDisabled: 'குரல் உதவி முடக்கப்பட்டது'
+            },
+            telugu: {
+                welcome: 'SecurePay కి స్వాగతం. ప్రతి స్పర్శలో నమ్మకం. ప్రారంభించడానికి Get Started బటన్ నొక్కండి.',
+                selectLanguage: 'కొనసాగించడానికి దయచేసి మీ ఇష్టమైన భాషను ఎంచుకోండి.',
+                enterMobile: 'కొనసాగించడానికి దయచేసి మీ మొబైల్ నంబర్ ఎంటర్ చేయండి. మేము వెరిఫికేషన్ కోసం వన్-టైమ్ పాస్‌వర్డ్ పంపుతాము.',
+                enterOTP: 'దయచేసి మీ మొబైల్ నంబర్‌కు పంపిన 4-అంకెల OTP ఎంటర్ చేయండి.',
+                selectBank: 'ఖాతా సెటప్‌ను కొనసాగించడానికి దయచేసి మీ బ్యాంక్‌ను ఎంచుకోండి.',
+                accountDetails: 'దయచేసి మీ బ్యాంక్ ఖాతా వివరాలను ఎంటర్ చేయండి. మీ ఖాతా నంబర్ మరియు IFSC కోడ్ ఎంటర్ చేయండి.',
+                createPin: 'మీ 4-అంకెల UPI PIN సృష్టించండి. ఈ PIN మీ అన్ని లావాదేవీలకు ఉపయోగించబడుతుంది.',
+                fingerprint: 'వేలిముద్ర ప్రమాణీకరణను సెటప్ చేయండి. నమోదు చేయడానికి మీ వేలిని సెన్సార్‌పై ఉంచండి.',
+                homeWelcome: 'SecurePay కి స్వాగతం. మీ ప్రస్తుత బ్యాలెన్స్ దాచబడింది.',
+                sendMoney: 'డబ్బు పంపడానికి కాంటాక్ట్ ఎంచుకోండి లేదా కొత్త UPI ID ఎంటర్ చేయండి.',
+                enterAmount: 'పంపాల్సిన మొత్తాన్ని ఎంటర్ చేయండి.',
+                verifyPin: 'చెల్లింపును అధికారం చేయడానికి దయచేసి మీ 4-అంకెల UPI PIN ఎంటర్ చేయండి.',
+                authFingerprint: 'చెల్లింపును అధికారం చేయడానికి దయచేసి మీ వేలిని వేలిముద్ర సెన్సార్‌పై ఉంచండి.',
+                paymentSuccess: 'చెల్లింపు విజయవంతం! మీరు విజయవంతంగా డబ్బు పంపారు.',
+                voiceEnabled: 'వాయిస్ సహాయం ప్రారంభించబడింది',
+                voiceDisabled: 'వాయిస్ సహాయం నిలిపివేయబడింది'
+            }
+        };
+        
+        // Languages data
+        const languages = [
+            { code: 'english', name: 'English', symbol: 'EN' },
+            { code: 'hindi', name: 'हिंदी', symbol: 'हि' },
+            { code: 'tamil', name: 'தமிழ்', symbol: 'த' },
+            { code: 'telugu', name: 'తెలుగు', symbol: 'తె' },
+            { code: 'kannada', name: 'ಕನ್ನಡ', symbol: 'ಕ' },
+            { code: 'malayalam', name: 'മലയാളം', symbol: 'മ' },
+            { code: 'gujarati', name: 'ગુજરાતી', symbol: 'ગુ' },
+            { code: 'marathi', name: 'मराठी', symbol: 'म' },
+            { code: 'bengali', name: 'বাংলা', symbol: 'ব' },
+            { code: 'punjabi', name: 'ਪੰਜਾਬੀ', symbol: 'ਪ' },
+            { code: 'urdu', name: 'اردو', symbol: 'ا' },
+            { code: 'odia', name: 'ଓଡ଼ିଆ', symbol: 'ଓ' },
+            { code: 'assamese', name: 'অসমীয়া', symbol: 'অ' },
+            { code: 'nepali', name: 'नेपाली', symbol: 'ने' },
+            { code: 'sanskrit', name: 'संस्कृत', symbol: 'स' },
+            { code: 'french', name: 'Français', symbol: 'FR' },
+            { code: 'spanish', name: 'Español', symbol: 'ES' },
+            { code: 'german', name: 'Deutsch', symbol: 'DE' },
+            { code: 'chinese', name: '中文', symbol: '中' },
+            { code: 'japanese', name: '日本語', symbol: '日' },
+            { code: 'korean', name: '한국어', symbol: '한' },
+            { code: 'arabic', name: 'العربية', symbol: 'ع' },
+            { code: 'russian', name: 'Русский', symbol: 'Р' },
+            { code: 'portuguese', name: 'Português', symbol: 'PT' }
+        ];
+        
+        // Initialize languages on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            populateLanguages();
+            initializeBalanceToggle();
+            initializeAmountInput();
+            initializeMobileInput();
+        });
+        
+        // Function to update mobile input based on country code
+        function updateMobileInput() {
+            const countryCode = document.getElementById('country-code');
+            const mobileInput = document.getElementById('mobile');
+            const selectedOption = countryCode.options[countryCode.selectedIndex];
+            const maxLength = selectedOption.getAttribute('data-length');
+            
+            // Update maxlength and placeholder
+            mobileInput.maxLength = maxLength;
+            mobileInput.placeholder = Enter ${maxLength}-digit mobile number;
+            
+            // Remove non-numeric characters and limit length
+            mobileInput.value = mobileInput.value.replace(/[^0-9]/g, '').slice(0, maxLength);
+        }
+        
+        // Function to initialize mobile input
+        function initializeMobileInput() {
+            const countryCode = document.getElementById('country-code');
+            const mobileInput = document.getElementById('mobile');
+            
+            if (countryCode && mobileInput) {
+                // Set initial placeholder
+                updateMobileInput();
+                
+                // Update when country code changes
+                countryCode.addEventListener('change', updateMobileInput);
+            }
+        }
+        
+        // Function to populate languages
+        function populateLanguages() {
+            const languagesGrid = document.getElementById('languages-grid');
+            if (languagesGrid) {
+                languagesGrid.innerHTML = '';
+                languages.forEach(lang => {
+                    const langCard = document.createElement('div');
+                    langCard.className = 'language-card p-4 rounded-xl shadow-sm bg-white flex flex-col items-center cursor-pointer';
+                    langCard.onclick = () => selectLanguage(langCard, lang.code);
+                    
+                    langCard.innerHTML = `
+                        <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+                            <span class="text-[#1E90FF] font-bold text-xl">${lang.symbol}</span>
+                        </div>
+                        <p class="font-medium">${lang.name}</p>
+                    `;
+                    
+                    languagesGrid.appendChild(langCard);
+                });
+            }
+        }
+        
+        // Function to search languages
+        function searchLanguages() {
+            const searchTerm = document.getElementById('language-search').value.toLowerCase();
+            const filteredLanguages = languages.filter(lang => 
+                lang.name.toLowerCase().includes(searchTerm) || 
+                lang.code.toLowerCase().includes(searchTerm)
+            );
+            
+            const languagesGrid = document.getElementById('languages-grid');
+            languagesGrid.innerHTML = '';
+            
+            filteredLanguages.forEach(lang => {
+                const langCard = document.createElement('div');
+                langCard.className = 'language-card p-4 rounded-xl shadow-sm bg-white flex flex-col items-center cursor-pointer';
+                langCard.onclick = () => selectLanguage(langCard, lang.code);
+                
+                langCard.innerHTML = `
+                    <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+                        <span class="text-[#1E90FF] font-bold text-xl">${lang.symbol}</span>
+                    </div>
+                    <p class="font-medium">${lang.name}</p>
+                `;
+                
+                languagesGrid.appendChild(langCard);
+            });
+        }
+        
+        // Function to speak welcome message
+        function speakWelcomeMessage() {
+            if (speakerEnabled) {
+                speakText('Welcome to SecurePay. Trust in Every Touch. Your secure payment companion. Tap the Get Started button to begin your journey.');
+            }
+            toggleSpeaker();
+        }
+        
+        // Function to toggle speaker
+        function toggleSpeaker() {
+            speakerEnabled = !speakerEnabled;
+            
+            // Update all speaker icons
+            const speakerButtons = document.querySelectorAll('.floating-speaker');
+            speakerButtons.forEach(button => {
+                const icon = button.querySelector('i');
+                if (speakerEnabled) {
+                    icon.className = 'fas fa-volume-up';
+                    button.style.backgroundColor = '#7C3AED';
+                    button.style.color = 'white';
+                } else {
+                    icon.className = 'fas fa-volume-mute';
+                    button.style.backgroundColor = '#EF4444';
+                    button.style.color = 'white';
+                    // Stop any ongoing speech
+                    if ('speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                    }
+                }
+            });
+            
+            // Speak status change in selected language
+            if (speakerEnabled) {
+                speakText(getLocalizedText('voiceEnabled'));
+            }
+        }
+        
+        // Function to show a specific page
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show the requested page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Scroll to top when changing pages
+            window.scrollTo(0, 0);
+            
+            // Auto-speak page content if speaker is enabled
+            if (speakerEnabled) {
+                setTimeout(() => {
+                    const pageTextKeys = {
+                        'welcome-page': 'welcome',
+                        'language-page': 'selectLanguage',
+                        'mobile-page': 'enterMobile',
+                        'otp-page': 'enterOTP',
+                        'bank-selection-page': 'selectBank',
+                        'account-details-page': 'accountDetails',
+                        'upi-pin-page': 'createPin',
+                        'biometric-setup-page-1': 'fingerprint',
+                        'biometric-setup-page-2': 'fingerprint',
+                        'home-page': 'homeWelcome',
+                        'send-money-page': 'sendMoney',
+                        'enter-amount-page': 'enterAmount',
+                        'verify-pin-page': 'verifyPin',
+                        'fingerprint-auth-page': 'authFingerprint',
+                        'payment-success-page': 'paymentSuccess'
+                    };
+                    
+                    const textKey = pageTextKeys[pageId];
+                    if (textKey) {
+                        speakText(getLocalizedText(textKey));
+                    }
+                }, 300);
+            }
+        }
+        
+        // Function to select language
+        function selectLanguage(element, language) {
+            // Remove selected class from all language cards
+            document.querySelectorAll('.language-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            element.classList.add('selected');
+            
+            // Store selected language
+            window.selectedLanguage = language;
+            currentLanguage = language;
+            
+            // Update speech synthesis language
+            updateSpeechLanguage(language);
+            
+            // Speak confirmation in selected language
+            if (speakerEnabled && translations[language]) {
+                speakText(translations[language].selectLanguage);
+            }
+        }
+        
+        // Function to update speech synthesis language
+        function updateSpeechLanguage(language) {
+            const languageCodes = {
+                'english': 'en-US',
+                'hindi': 'hi-IN',
+                'tamil': 'ta-IN',
+                'telugu': 'te-IN',
+                'kannada': 'kn-IN',
+                'malayalam': 'ml-IN',
+                'gujarati': 'gu-IN',
+                'marathi': 'mr-IN',
+                'bengali': 'bn-IN',
+                'punjabi': 'pa-IN',
+                'urdu': 'ur-PK',
+                'odia': 'or-IN',
+                'assamese': 'as-IN',
+                'nepali': 'ne-NP',
+                'sanskrit': 'sa-IN',
+                'french': 'fr-FR',
+                'spanish': 'es-ES',
+                'german': 'de-DE',
+                'chinese': 'zh-CN',
+                'japanese': 'ja-JP',
+                'korean': 'ko-KR',
+                'arabic': 'ar-SA',
+                'russian': 'ru-RU',
+                'portuguese': 'pt-BR'
+            };
+            
+            window.speechLanguageCode = languageCodes[language] || 'en-US';
+        }
+        
+        // Function to select bank
+        function selectBank(element, bank) {
+            // Remove selected class from all bank cards
+            document.querySelectorAll('.bank-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            element.classList.add('selected');
+            
+            // Store selected bank
+            window.selectedBank = bank;
+        }
+        
+        // Function to select contact
+        function selectContact(element, contactId, contactName, contactUPI) {
+            // Remove selected class from all contact cards
+            document.querySelectorAll('.contact-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            element.classList.add('selected');
+            
+            // Store selected contact info
+            selectedContactInfo = {
+                id: contactId,
+                name: contactName,
+                upi: contactUPI
+            };
+            
+            // Update the enter amount page with selected contact info
+            updateEnterAmountPage();
+        }
+        
+        // Function to update enter amount page with contact info
+        function updateEnterAmountPage() {
+            if (selectedContactInfo.name) {
+                // Update enter amount page
+                const recipientName = document.getElementById('recipient-name');
+                const recipientUpi = document.getElementById('recipient-upi');
+                const recipientInitial = document.getElementById('recipient-initial');
+                
+                if (recipientName) recipientName.textContent = selectedContactInfo.name;
+                if (recipientUpi) recipientUpi.textContent = selectedContactInfo.upi;
+                if (recipientInitial) recipientInitial.textContent = selectedContactInfo.name.charAt(0).toUpperCase();
+            }
+        }
+        
+        // Function to update payment pages with current amount and recipient
+        function updatePaymentPages() {
+            const amount = document.getElementById('amount')?.value || '0';
+            
+            if (selectedContactInfo.name) {
+                // Update verify PIN page
+                const paymentAmount = document.getElementById('payment-amount');
+                const paymentRecipient = document.getElementById('payment-recipient');
+                
+                if (paymentAmount) paymentAmount.textContent = Paying ₹${amount} to;
+                if (paymentRecipient) paymentRecipient.textContent = ${selectedContactInfo.name} (${selectedContactInfo.upi});
+                
+                // Update fingerprint auth page
+                const authPaymentDetails = document.getElementById('auth-payment-details');
+                if (authPaymentDetails) authPaymentDetails.textContent = ₹${amount} to ${selectedContactInfo.name};
+            }
+        }
+        
+        // Function to move to next input field
+        function moveToNext(currentInput, nextInputId) {
+            if (currentInput.value.length >= currentInput.maxLength) {
+                const nextInput = document.getElementById(nextInputId);
+                if (nextInput) nextInput.focus();
+            }
+        }
+        
+        // Function to simulate fingerprint scan
+        function simulateFingerprintScan(memberNumber) {
+            const progressBar = document.getElementById(progress-bar-${memberNumber});
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    
+                    // Show success message
+                    setTimeout(() => {
+                        alert(Fingerprint for Member ${memberNumber} registered successfully!);
+                        
+                        // Move to next page
+                        if (memberNumber === 1) {
+                            showPage('biometric-setup-page-2');
+                        } else {
+                            showPage('home-page');
+                        }
+                    }, 200);
+                } else {
+                    width += 5;
+                    progressBar.style.width = width + '%';
+                }
+            }, 100);
+        }
+        
+        // Function to simulate fingerprint authentication
+        function simulateAuthFingerprint() {
+            const progressBar = document.getElementById('auth-progress-bar');
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    
+                    // Update payment success page with correct info
+                    updatePaymentSuccessPage();
+                    
+                    // Show success message and navigate to success page
+                    setTimeout(() => {
+                        showPage('payment-success-page');
+                        
+                        // Add transaction to recent transactions
+                        addTransactionToHistory();
+                    }, 200);
+                } else {
+                    width += 5;
+                    progressBar.style.width = width + '%';
+                }
+            }, 100);
+        }
+        
+        // Function to update payment success page
+        function updatePaymentSuccessPage() {
+            const amount = document.getElementById('amount').value || '500';
+            const successPage = document.getElementById('payment-success-page');
+            
+            if (successPage && selectedContactInfo.name) {
+                // Update main success message
+                const successTitle = successPage.querySelector('h2');
+                if (successTitle) {
+                    successTitle.textContent = ₹${amount} Sent Successfully!;
+                }
+                
+                const successSubtitle = successPage.querySelector('p');
+                if (successSubtitle) {
+                    successSubtitle.textContent = Your payment to ${selectedContactInfo.name} has been completed;
+                }
+                
+                // Update payment details in the white card
+                const paymentDetails = successPage.querySelector('.bg-white.rounded-2xl');
+                if (paymentDetails) {
+                    paymentDetails.innerHTML = `
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">Amount</p>
+                            <p class="font-bold">₹${amount}.00</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">To</p>
+                            <p class="font-bold">${selectedContactInfo.name}</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">UPI ID</p>
+                            <p class="font-bold">${selectedContactInfo.upi}</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-slate-500">Transaction ID</p>
+                            <p class="font-bold">SP${Math.floor(Math.random() * 100000000)}</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <p class="text-slate-500">Date & Time</p>
+                            <p class="font-bold">${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}, ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // Function to add transaction to history
+        function addTransactionToHistory() {
+            const amount = document.getElementById('amount').value || '500';
+            const transactionsList = document.getElementById('recent-transactions');
+            
+            if (transactionsList && selectedContactInfo.name) {
+                const newTransaction = document.createElement('div');
+                newTransaction.className = 'bg-white p-4 rounded-xl flex items-center justify-between shadow-sm';
+                newTransaction.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                            <span class="text-red-600 font-bold text-sm">${selectedContactInfo.name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">To ${selectedContactInfo.name}</h3>
+                            <p class="text-xs text-slate-500">Just now</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold text-red-600">-₹${amount}</p>
+                `;
+                
+                // Insert at the beginning
+                transactionsList.insertBefore(newTransaction, transactionsList.firstChild);
+            }
+        }
+        
+        // Function to request camera permission and scan QR from permission page
+        function requestCameraPermissionAndScan() {
+            if (speakerEnabled) speakText('Requesting camera permission to scan QR code');
+            
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        // Permission granted - show camera interface
+                        if (speakerEnabled) speakText('Camera permission granted. Opening camera to scan QR code');
+                        
+                        // Create and show camera interface
+                        showCameraInterface(stream);
+                    })
+                    .catch(function(error) {
+                        alert('Camera permission denied. Please enable camera access in your browser settings to scan QR codes.');
+                        if (speakerEnabled) speakText('Camera permission denied. Please enable camera access to scan QR codes');
+                        // Go back to home page
+                        showPage('home-page');
+                    });
+            } else {
+                alert('Camera not supported on this device.');
+                if (speakerEnabled) speakText('Camera not supported on this device');
+                showPage('home-page');
+            }
+        }
+        
+        // Function to show camera interface for QR scanning
+        function showCameraInterface(stream) {
+            // Create camera overlay
+            const cameraOverlay = document.createElement('div');
+            cameraOverlay.id = 'camera-overlay';
+            cameraOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: black;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            // Create video element
+            const video = document.createElement('video');
+            video.style.cssText = `
+                width: 100%;
+                max-width: 400px;
+                height: 300px;
+                object-fit: cover;
+                border-radius: 12px;
+                margin-bottom: 20px;
+            `;
+            video.srcObject = stream;
+            video.autoplay = true;
+            video.playsInline = true;
+            
+            // Create scanning frame overlay
+            const scanFrame = document.createElement('div');
+            scanFrame.style.cssText = `
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                border: 2px solid #7C3AED;
+                border-radius: 12px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+            `;
+            
+            // Create instructions
+            const instructions = document.createElement('div');
+            instructions.style.cssText = `
+                color: white;
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 18px;
+                font-weight: 500;
+            `;
+            instructions.textContent = 'Point camera at QR code to scan';
+            
+            // Create close button
+            const closeButton = document.createElement('button');
+            closeButton.style.cssText = `
+                background: #EF4444;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                margin-top: 20px;
+            `;
+            closeButton.textContent = 'Close Camera';
+            closeButton.onclick = function() {
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(cameraOverlay);
+                showPage('home-page');
+            };
+            
+            // Assemble camera interface
+            const cameraContainer = document.createElement('div');
+            cameraContainer.style.cssText = 'position: relative;';
+            cameraContainer.appendChild(video);
+            cameraContainer.appendChild(scanFrame);
+            
+            cameraOverlay.appendChild(instructions);
+            cameraOverlay.appendChild(cameraContainer);
+            cameraOverlay.appendChild(closeButton);
+            
+            document.body.appendChild(cameraOverlay);
+            
+            // Simulate QR code detection after 3 seconds
+            setTimeout(() => {
+                const scannedData = {
+                    name: 'Merchant Store',
+                    upi: 'merchant@paytm',
+                    amount: '250'
+                };
+                
+                // Stop camera stream
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(cameraOverlay);
+                
+                const proceed = confirm(QR Code Scanned Successfully!\n\nPay to: ${scannedData.name}\nUPI ID: ${scannedData.upi}\nAmount: ₹${scannedData.amount}\n\nProceed to payment?);
+                
+                if (proceed) {
+                    // Auto-fill payment details
+                    selectedContactInfo = {
+                        name: scannedData.name,
+                        upi: scannedData.upi
+                    };
+                    
+                    // Navigate to amount page with pre-filled data
+                    updateEnterAmountPage();
+                    document.getElementById('amount').value = scannedData.amount;
+                    showPage('enter-amount-page');
+                    
+                    if (speakerEnabled) speakText(QR code scanned. Pay ${scannedData.amount} rupees to ${scannedData.name});
+                } else {
+                    // Go back to home if user cancels
+                    showPage('home-page');
+                }
+            }, 3000);
+        }
+        
+        // Legacy function for backward compatibility
+        function requestCameraPermission() {
+            showPage('camera-permission-page');
+        }
+        
+        // Balance toggle functionality
+        function initializeBalanceToggle() {
+            const toggleBalance = document.getElementById('toggle-balance');
+            
+            if (toggleBalance) {
+                const balanceIcon = document.getElementById('balance-icon');
+                const balanceText = document.getElementById('balance-text');
+                let balanceHidden = true; // Start hidden
+                
+                toggleBalance.addEventListener('click', function() {
+                    if (balanceHidden) {
+                        // Show balance
+                        balanceText.textContent = '₹24,500.75';
+                        balanceIcon.classList.remove('fa-eye');
+                        balanceIcon.classList.add('fa-eye-slash');
+                        balanceHidden = false;
+                        if (speakerEnabled) speakText('Balance is now visible');
+                    } else {
+                        // Hide balance
+                        balanceText.textContent = '••••••••';
+                        balanceIcon.classList.remove('fa-eye-slash');
+                        balanceIcon.classList.add('fa-eye');
+                        balanceHidden = true;
+                        if (speakerEnabled) speakText('Balance is now hidden');
+                    }
+                });
+            }
+        }
+        
+        // Amount input functionality
+        function initializeAmountInput() {
+            const amountInput = document.getElementById('amount');
+            if (amountInput) {
+                amountInput.addEventListener('focus', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+                
+                amountInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+            }
+        }
+        
+        // Text-to-speech functionality
+        function speakText(text) {
+            if (!speakerEnabled) return;
+            
+            // Check if browser supports speech synthesis
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Create a new speech synthesis utterance
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set properties based on selected language
+                utterance.lang = window.speechLanguageCode || 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                // Speak the text
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // Function to get localized text
+        function getLocalizedText(key) {
+            return translations[currentLanguage] && translations[currentLanguage][key] 
+                ? translations[currentLanguage][key] 
+                : translations['english'][key];
+        }
+        
+        // Form validation functions
+        function validateMobileNumber() {
+            const mobile = document.getElementById('mobile').value;
+            const countryCode = document.getElementById('country-code');
+            const selectedOption = countryCode.options[countryCode.selectedIndex];
+            const requiredLength = parseInt(selectedOption.getAttribute('data-length'));
+            
+            return mobile && mobile.length === requiredLength && /^\d+$/.test(mobile);
+        }
+        
+        function validateOTP() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            return Array.from(otpInputs).every(input => input.value.length === 1);
+        }
+        
+        function validateAccountDetails() {
+            const accountNumber = document.getElementById('account-number').value;
+            const confirmAccount = document.getElementById('confirm-account').value;
+            const ifscCode = document.getElementById('ifsc-code').value;
+            const accountHolder = document.getElementById('account-holder').value;
+            
+            return accountNumber && confirmAccount && ifscCode && accountHolder && 
+                   accountNumber === confirmAccount;
+        }
+        
+        function validateUPIPin() {
+            const pinInputs = document.querySelectorAll('.pin-input');
+            const confirmPinInputs = document.querySelectorAll('#confirm-pin-2, #confirm-pin-3, #confirm-pin-4');
+            
+            const pin = Array.from(pinInputs).map(input => input.value).join('');
+            const confirmPin = Array.from(confirmPinInputs).map(input => input.value).join('');
+            
+            return pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
+        }
+        
+        // Enhanced continue button functionality
+        function enhancedContinue(currentPage, nextPage, validationFunction) {
+            if (validationFunction && !validationFunction()) {
+                alert('Please fill in all required information correctly.');
+                if (speakerEnabled) speakText('Please fill in all required information correctly.');
+                return;
+            }
+            showPage(nextPage);
+        }
+        
+        // Function to proceed to payment with validation
+        function proceedToPayment() {
+            const amount = document.getElementById('amount').value.trim();
+            
+            if (!selectedContactInfo.name) {
+                alert('Please select a contact first.');
+                if (speakerEnabled) speakText('Please select a contact first');
+                return;
+            }
+            
+            if (!amount || parseFloat(amount) <= 0) {
+alert('Please enter a valid amount.');
+                if (speakerEnabled) speakText('Please enter a valid amount');
+                return;
+            }
+            
+            // Update payment pages with current info
+            updatePaymentPages();
+            showPage('verify-pin-page');
+        }
+        
+        // Function to verify UPI PIN during payment
+        function verifyUPIPin() {
+            const verifyPinInputs = document.querySelectorAll('#verify-pin-page .pin-input');
+            const enteredPin = Array.from(verifyPinInputs).map(input => input.value).join('');
+            
+            if (enteredPin.length !== 4) {
+                alert('Please enter your complete 4-digit UPI PIN.');
+                if (speakerEnabled) speakText('Please enter your complete 4-digit UPI PIN');
+                return;
+            }
+            
+            if (enteredPin !== userUPIPin) {
+                alert('Incorrect UPI PIN. Please try again.');
+                if (speakerEnabled) speakText('Incorrect UPI PIN. Please try again');
+                // Clear the PIN inputs
+                verifyPinInputs.forEach(input => input.value = '');
+                verifyPinInputs[0].focus();
+                return;
+            }
+            
+            // PIN is correct, proceed to fingerprint authentication
+            showPage('fingerprint-auth-page');
+        }
+        
+        // Function to filter transactions
+        function filterTransactions(type) {
+            // Update button styles
+            document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+                btn.className = 'px-4 py-2 bg-gray-100 text-gray-600 rounded-lg';
+            });
+            document.getElementById(filter-${type}).className = 'px-4 py-2 bg-[#1E90FF] text-white rounded-lg font-medium';
+            
+            // Get all transaction elements
+            const transactions = document.querySelectorAll('#history-page .space-y-3 > div');
+            
+            transactions.forEach(transaction => {
+                const amountElement = transaction.querySelector('p:last-child');
+                const isReceived = amountElement && amountElement.textContent.includes('+');
+                const isSent = amountElement && amountElement.textContent.includes('-');
+                
+                switch(type) {
+                    case 'all':
+                        transaction.style.display = 'flex';
+                        break;
+                    case 'sent':
+                        transaction.style.display = isSent ? 'flex' : 'none';
+                        break;
+                    case 'received':
+                        transaction.style.display = isReceived ? 'flex' : 'none';
+                        break;
+                }
+            });
+            
+            if (speakerEnabled) {
+                const filterText = type === 'all' ? 'all transactions' : ${type} transactions;
+                speakText(Showing ${filterText});
+            }
+        }
+        
+        // Global user data
+        let userData = {
+            accountHolderName: '',
+            mobile: '',
+            selectedLanguage: '',
+            selectedBank: '',
+            accountNumber: '',
+            ifscCode: ''
+        };
+
+        // Main validation function
+        function validateAndContinue(currentPage, nextPage) {
+            let isValid = false;
+            let errorMessage = '';
+            
+            switch(currentPage) {
+                case 'language-page':
+                    isValid = window.selectedLanguage;
+                    errorMessage = 'Please select a language to continue.';
+                    break;
+                    
+                case 'mobile-page':
+                    const mobile = document.getElementById('mobile').value.trim();
+                    const countryCode = document.getElementById('country-code').value;
+                    const checkbox = document.querySelector('input[type="checkbox"]').checked;
+                    const selectedOption = document.getElementById('country-code').options[document.getElementById('country-code').selectedIndex];
+                    const requiredLength = parseInt(selectedOption.getAttribute('data-length'));
+                    
+                    isValid = mobile && mobile.length === requiredLength && /^\d+$/.test(mobile) && checkbox;
+                    errorMessage = Please enter a valid ${requiredLength}-digit mobile number and accept terms and conditions.;
+                    if (isValid) {
+                        userData.mobile = mobile;
+                        userData.countryCode = countryCode;
+                        // Update OTP page with mobile number
+                        document.querySelector('#otp-page p').textContent = Enter the 4-digit code sent to ${countryCode} ${mobile};
+                    }
+                    break;
+                    
+                case 'otp-page':
+                    const otpInputs = document.querySelectorAll('.otp-input');
+                    isValid = Array.from(otpInputs).every(input => input.value.trim().length === 1);
+                    errorMessage = 'Please enter the complete 4-digit OTP to verify your mobile number.';
+                    break;
+                    
+                case 'bank-selection-page':
+                    isValid = window.selectedBank;
+                    errorMessage = 'Please select your bank to continue with account setup.';
+                    if (isValid) {
+                        userData.selectedBank = window.selectedBank;
+                    }
+                    break;
+                    
+                case 'account-details-page':
+                    const accountNumber = document.getElementById('account-number').value.trim();
+                    const confirmAccount = document.getElementById('confirm-account').value.trim();
+                    const ifscCode = document.getElementById('ifsc-code').value.trim();
+                    const accountHolder = document.getElementById('account-holder').value.trim();
+                    
+                    isValid = accountNumber && confirmAccount && ifscCode && accountHolder && 
+                             accountNumber === confirmAccount && accountNumber.length >= 9 && ifscCode.length >= 11;
+                    errorMessage = 'Please fill all account details correctly. Account numbers must match and IFSC code must be valid.';
+                    
+                    // Store user data and update throughout app
+                    if (isValid) {
+                        userData.accountHolderName = accountHolder;
+                        userData.accountNumber = accountNumber;
+                        userData.ifscCode = ifscCode;
+                        updateUserDataThroughoutApp();
+                    }
+                    break;
+                    
+                case 'upi-pin-page':
+                    const pinInputs = document.querySelectorAll('.pin-input');
+                    const allPinInputs = Array.from(pinInputs);
+                    const firstFourPins = allPinInputs.slice(0, 4);
+                    const lastFourPins = allPinInputs.slice(4, 8);
+                    
+                    const pin = firstFourPins.map(input => input.value).join('');
+                    const confirmPin = lastFourPins.map(input => input.value).join('');
+                    
+                    isValid = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin && /^\d{4}$/.test(pin);
+                    errorMessage = 'Please enter and confirm your 4-digit UPI PIN. Both PINs must match and contain only numbers.';
+                    
+                    if (isValid) {
+                        userUPIPin = pin; // Store the PIN for later validation
+                    }
+                    break;
+                    
+                default:
+                    isValid = true;
+            }
+            
+            if (!isValid) {
+                alert(errorMessage);
+                if (speakerEnabled) speakText(errorMessage);
+                return;
+            }
+            
+            showPage(nextPage);
+        }
+
+        // Function to update user data throughout the app
+        function updateUserDataThroughoutApp() {
+            const name = userData.accountHolderName;
+            const initial = name.charAt(0).toUpperCase();
+            
+            // Update home page greeting
+            const userGreeting = document.getElementById('user-greeting');
+            if (userGreeting) userGreeting.textContent = Hi, ${name};
+            
+            // Update self account page
+            const selfAccountName = document.getElementById('self-account-name');
+            if (selfAccountName) selfAccountName.textContent = name;
+            
+            const selfAccountInitial = document.getElementById('self-account-initial');
+            if (selfAccountInitial) selfAccountInitial.textContent = initial;
+            
+            const selfAccountUpi = document.getElementById('self-account-upi');
+            if (selfAccountUpi) selfAccountUpi.textContent = ${name.toLowerCase().replace(/\s+/g, '')}@securepay;
+            
+            // Update profile page
+            const profileName = document.querySelector('#profile-page h2');
+            if (profileName) profileName.textContent = name;
+            
+            const profileInitial = document.querySelector('#profile-page .w-24 span');
+            if (profileInitial) profileInitial.textContent = initial;
+            
+            const profileUpi = document.querySelector('#profile-page p');
+            if (profileUpi) profileUpi.textContent = ${name.toLowerCase().replace(/\s+/g, '')}@securepay;
+            
+            // Update account details in self account
+            const accountDetails = document.querySelector('#self-account-page .space-y-4');
+            if (accountDetails) {
+                accountDetails.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Account Number</span>
+                        <span class="font-medium">${userData.accountNumber.slice(-4)}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Bank</span>
+                        <span class="font-medium">${getBankName(userData.selectedBank)}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">IFSC Code</span>
+                        <span class="font-medium">${userData.ifscCode}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Mobile</span>
+                        <span class="font-medium">+91 ${userData.mobile}</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Function to get bank name from code
+        function getBankName(bankCode) {
+            const bankNames = {
+                'sbi': 'State Bank of India',
+                'hdfc': 'HDFC Bank',
+                'icici': 'ICICI Bank',
+                'axis': 'Axis Bank',
+                'kotak': 'Kotak Mahindra Bank'
+            };
+            return bankNames[bankCode] || 'Selected Bank';
+        }
+        
+        // Permission request functions
+        function requestLocationPermission() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        alert('Location permission granted! You can now find nearby merchants and ATMs.');
+                        if (speakerEnabled) speakText('Location permission granted');
+                    },
+                    function(error) {
+                        alert('Location permission denied. You can enable it later in settings to find nearby merchants.');
+                        if (speakerEnabled) speakText('Location permission denied');
+                    }
+                );
+            } else {
+                alert('Location not supported on this device.');
+            }
+        }
+        
+        function requestContactsPermission() {
+            // Contacts API is not available in web browsers for security reasons
+            alert('Contacts permission granted! You can now send money to your contacts easily.');
+            if (speakerEnabled) speakText('Contacts permission granted');
+        }
+
+        // Bill payment function
+        function payBill(billType) {
+            alert(${billType} payment initiated. You would be redirected to enter bill details and amount.);
+            if (speakerEnabled) speakText(${billType} payment option selected);
+        }
+
+        // Enhanced receive function with options
+        function showReceiveOptions() {
+            const options = [
+                '1. Show My QR Code',
+                '2. Request Money with Amount',
+                '3. Share UPI ID',
+                '4. Generate Payment Link'
+            ];
+            
+            const choice = prompt(Receive Money Options:\n\n${options.join('\n')}\n\nEnter option number (1-4):);
+            
+            switch(choice) {
+                case '1':
+                    showMyQRCodeModal();
+                    break;
+                case '2':
+                    requestMoneyWithAmount();
+                    break;
+                case '3':
+                    shareUPIID();
+                    break;
+                case '4':
+                    generatePaymentLink();
+                    break;
+                default:
+                    if (choice) alert('Invalid option selected.');
+            }
+            
+            if (speakerEnabled && choice) {
+                const optionNames = ['', 'QR code', 'money request', 'UPI ID sharing', 'payment link'];
+                speakText(${optionNames[choice]} option selected);
+            }
+        }
+        
+        // Function to show QR code modal
+        function showMyQRCodeModal(amount = null) {
+            const name = userData.accountHolderName || 'User';
+            const upiId = ${name.toLowerCase().replace(/\s+/g, '')}@securepay;
+            
+            document.getElementById('qr-name').textContent = name;
+            document.getElementById('qr-upi').textContent = upiId;
+            
+            const amountElement = document.getElementById('qr-amount');
+            if (amount && parseFloat(amount) > 0) {
+                amountElement.textContent = Amount: ₹${amount};
+                amountElement.style.display = 'block';
+            } else {
+                amountElement.style.display = 'none';
+            }
+            
+            document.getElementById('qr-modal').classList.remove('hidden');
+            
+            if (speakerEnabled) {
+                const amountText = amount ? ` for ${amount} rupees` : '';
+                speakText(Showing your QR code${amountText});
+            }
+        }
+        
+        // Function to request money with specific amount
+        function requestMoneyWithAmount() {
+            const amount = prompt('Enter amount to request:');
+            if (amount && parseFloat(amount) > 0) {
+                showMyQRCodeModal(amount);
+            } else if (amount) {
+                alert('Please enter a valid amount.');
+            }
+        }
+        
+        // Function to generate payment link
+        function generatePaymentLink() {
+            const name = userData.accountHolderName || 'User';
+            const upiId = ${name.toLowerCase().replace(/\s+/g, '')}@securepay;
+            const amount = prompt('Enter amount for payment link (optional):');
+            
+            let paymentLink = https://securepay.app/pay/${upiId};
+            if (amount && parseFloat(amount) > 0) {
+                paymentLink += ?amount=${amount};
+            }
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Payment Link',
+                    text: Pay ${name} using this secure link,
+                    url: paymentLink
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = Pay ${name} using this link: ${paymentLink};
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Payment link copied to clipboard!');
+            }
+            
+            if (speakerEnabled) speakText('Payment link generated and shared');
+        }
+
+        // Profile functions
+        function showPersonalInfo() {
+            const info = Personal Information:\n\nFull Name: ${userData.accountHolderName || 'Not set'}\nMobile Number: +91 ${userData.mobile || 'Not set'}\nEmail: ${userData.accountHolderName ? userData.accountHolderName.toLowerCase().replace(/\s+/g, '') + '@gmail.com' : 'Not set'}\nBank: ${getBankName(userData.selectedBank) || 'Not set'}\nAccount Number: ****${userData.accountNumber ? userData.accountNumber.slice(-4) : 'Not set'}\nIFSC Code: ${userData.ifscCode || 'Not set'}\nUPI ID: ${userData.accountHolderName ? userData.accountHolderName.toLowerCase().replace(/\s+/g, '') + '@securepay' : 'Not set'}\nLanguage: ${currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1)}\n\nYou can edit these details by contacting customer support.;
+            alert(info);
+            if (speakerEnabled) speakText('Showing your complete personal information including name, mobile, bank details and UPI ID');
+        }
+
+        function showSecuritySettings() {
+            const securityOptions = [
+                '1. Change UPI PIN',
+                '2. Biometric Authentication Settings',
+                '3. Two-Factor Authentication',
+                '4. Login History & Sessions',
+                '5. Device Management',
+                '6. Transaction Limits',
+                '7. Auto-lock Settings',
+                '8. Privacy Controls'
+            ];
+            
+            const choice = prompt(Security Settings:\n\n${securityOptions.join('\n')}\n\nEnter option number (1-8) or press Cancel:);
+            
+            if (choice) {
+                switch(choice) {
+                    case '1':
+                        alert('Change UPI PIN:\n\nFor security reasons, UPI PIN can only be changed through secure authentication. Please visit nearest bank branch or use net banking.');
+                        break;
+                    case '2':
+                        alert('Biometric Authentication:\n\n✓ Fingerprint: Enabled\n✓ Face Recognition: Available\n• Voice Recognition: Coming Soon\n\nYou can enable/disable biometric authentication for transactions.');
+                        break;
+                    case '3':
+                        alert('Two-Factor Authentication:\n\n✓ SMS OTP: Enabled\n✓ Email Verification: Enabled\n• Authenticator App: Available\n\nAdditional security layer for all transactions.');
+                        break;
+                    case '4':
+                        alert('Login History:\n\n• Last Login: Today, 10:30 AM\n• Device: Mobile Browser\n• Location: Current Location\n• Previous Sessions: 5 active sessions\n\nYou can view and manage all active sessions.');
+                        break;
+                    case '5':
+                        alert('Device Management:\n\n• Current Device: Trusted\n• Registered Devices: 2\n• Maximum Allowed: 5\n\nYou can add, remove, or manage trusted devices for secure access.');
+                        break;
+                    case '6':
+                        alert('Transaction Limits:\n\n• Per Transaction: ₹1,00,000\n• Daily Limit: ₹1,00,000\n• Monthly Limit: ₹20,00,000\n\nLimits can be modified through bank verification.');
+                        break;
+                    case '7':
+                        alert('Auto-lock Settings:\n\n• Current: 5 minutes\n• Options: 1, 2, 5, 10, 30 minutes\n• Never (Not Recommended)\n\nApp will automatically lock after inactivity.');
+                        break;
+                    case '8':
+                        alert('Privacy Controls:\n\n• Hide Balance: Available\n• Transaction History: Private\n• Contact Sharing: Disabled\n• Analytics: Anonymous\n\nControl what information is visible and shared.');
+                        break;
+                    default:
+                        alert('Invalid option selected.');
+                }
+            }
+            if (speakerEnabled) speakText('Security settings menu opened with multiple options');
+        }
+
+        function showNotificationSettings() {
+            const notificationOptions = [
+                '1. Transaction Alerts',
+                '2. Payment Reminders',
+                '3. Security Alerts',
+                '4. Promotional Offers',
+                '5. App Updates',
+                '6. Balance Alerts',
+                '7. Bill Payment Reminders'
+            ];
+            
+            const choice = prompt(Notification Settings:\n\n${notificationOptions.join('\n')}\n\nEnter option number (1-7) or press Cancel:);
+            
+            if (choice) {
+                switch(choice) {
+                    case '1':
+                        alert('Transaction Alerts:\n\n✓ SMS Alerts: Enabled\n✓ Email Alerts: Enabled\n✓ Push Notifications: Enabled\n✓ In-App Notifications: Enabled\n\nGet instant alerts for all transactions.');
+                        break;
+                    case '2':
+                        alert('Payment Reminders:\n\n✓ Bill Due Dates: Enabled\n✓ Recurring Payments: Enabled\n• Custom Reminders: Available\n\nNever miss important payments.');
+                        break;
+                    case '3':
+                        alert('Security Alerts:\n\n✓ Login Attempts: Enabled\n✓ PIN Changes: Enabled\n✓ Device Changes: Enabled\n✓ Suspicious Activity: Enabled\n\nStay informed about account security.');
+                        break;
+                    case '4':
+                        alert('Promotional Offers:\n\n• Cashback Offers: Enabled\n• Discount Coupons: Enabled\n• Partner Deals: Disabled\n• Seasonal Offers: Enabled\n\nManage marketing communications.');
+                        break;
+                    case '5':
+                        alert('App Updates:\n\n✓ Security Updates: Auto-enabled\n• Feature Updates: Enabled\n• Beta Features: Disabled\n\nStay updated with latest features.');
+                        break;
+                    case '6':
+                        alert('Balance Alerts:\n\n• Low Balance: ₹1,000\n• High Transaction: ₹50,000\n• Daily Spending: ₹10,000\n\nCustomize balance monitoring alerts.');
+                        break;
+                    case '7':
+                        alert('Bill Payment Reminders:\n\n✓ Electricity: 3 days before\n✓ Mobile: 2 days before\n✓ Internet: 1 day before\n• Custom Bills: Available\n\nManage all bill reminders.');
+                        break;
+                    default:
+                        alert('Invalid option selected.');
+                }
+            }
+            if (speakerEnabled) speakText('Notification settings opened with various alert options');
+        }
+
+        function showAppSettings() {
+            const appOptions = [
+                '1. Language Preferences',
+                '2. Theme Settings',
+                '3. Auto-lock Timer',
+                '4. Data Usage',
+                '5. Cache Management',
+                '6. Backup & Sync',
+                '7. Accessibility'
+            ];
+            
+            const choice = prompt(App Settings:\n\n${appOptions.join('\n')}\n\nEnter option number (1-7) or press Cancel:);
+            
+            if (choice) {
+                switch(choice) {
+                    case '1':
+                        alert(Language Preferences:\n\n✓ Current: ${currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1)}\n• Available: 24 languages\n• Voice Support: Enabled\n• Regional Settings: Auto-detect\n\nChange language anytime from settings.);
+                        break;
+                    case '2':
+                        alert('Theme Settings:\n\n✓ Current: Light Purple Theme\n• Dark Mode: Available\n• High Contrast: Available\n• Custom Colors: Coming Soon\n\nPersonalize your app appearance.');
+                        break;
+                    case '3':
+                        alert('Auto-lock Timer:\n\n✓ Current: 5 minutes\n• Options: 1, 2, 5, 10, 30 minutes\n• Immediate Lock: Available\n• Biometric Unlock: Enabled\n\nSecurity through automatic locking.');
+                        break;
+                    case '4':
+                        alert('Data Usage:\n\n• This Month: 45 MB\n• Average: 50 MB/month\n• Data Saver: Enabled\n• Offline Mode: Available\n\nMonitor and control data consumption.');
+                        break;
+                    case '5':
+                        alert('Cache Management:\n\n• Cache Size: 120 MB\n• Last Cleared: 5 days ago\n• Auto-clear: Weekly\n• Clear Now: Available\n\nOptimize app performance and storage.');
+                        break;
+                    case '6':
+                        alert('Backup & Sync:\n\n✓ Transaction History: Backed up\n✓ Settings: Synced\n• Contacts: Optional\n• Auto-backup: Enabled\n\nSecure cloud backup of your data.');
+                        break;
+                    case '7':
+                        alert('Accessibility:\n\n✓ Voice Assistance: Enabled\n• Large Text: Available\n• High Contrast: Available\n• Screen Reader: Compatible\n\nMake the app accessible for everyone.');
+                        break;
+                    default:
+                        alert('Invalid option selected.');
+                }
+            }
+            if (speakerEnabled) speakText('App settings opened with customization options');
+        }
+
+        // Help functions
+        function showFAQ() {
+            alert('Frequently Asked Questions:\n\n1. How to send money?\n2. How to add bank account?\n3. How to reset UPI PIN?\n4. Transaction limits\n5. Security features');
+            if (speakerEnabled) speakText('Showing frequently asked questions');
+        }
+
+        function contactSupport() {
+            alert('Contact Support:\n\n📞 Call: 1800-123-4567\n📧 Email: support@securepay.com\n💬 Live Chat: Available 24/7\n🕒 Response Time: Within 2 hours');
+            if (speakerEnabled) speakText('Contact support information displayed');
+        }
+
+        function reportIssue() {
+            alert('Report an Issue:\n\nPlease describe your issue and we will get back to you within 24 hours.\n\n• Payment Issues\n• App Crashes\n• Security Concerns\n• Feature Requests');
+            if (speakerEnabled) speakText('Issue reporting form opened');
+        }
+
+        function showUserGuide() {
+            alert('SecurePay User Guide:\n\n1. Getting Started\n2. Making Payments\n3. Managing Account\n4. Security Features\n5. Troubleshooting\n\nDetailed guide available in the app.');
+            if (speakerEnabled) speakText('User guide opened');
+        }
+
+        // Self account functions
+        function showMyQRCode() {
+            showMyQRCodeModal();
+        }
+
+        function shareUPIID() {
+            const name = userData.accountHolderName || 'User';
+            const upiId = ${name.toLowerCase().replace(/\s+/g, '')}@securepay;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My UPI ID',
+                    text: Send money to ${name} using UPI ID: ${upiId},
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const textArea = document.createElement('textarea');
+                textArea.value = Send money to ${name} using UPI ID: ${upiId};
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('UPI ID copied to clipboard!');
+            }
+            if (speakerEnabled) speakText('UPI ID shared successfully');
+        }
+
+        function editProfile() {
+            const name = userData.accountHolderName || 'User';
+            const email = ${name.toLowerCase().replace(/\s+/g, '')}@gmail.com;
+            
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-email').value = email;
+            document.getElementById('edit-initial').textContent = name.charAt(0).toUpperCase();
+            
+            document.getElementById('profile-edit-modal').classList.remove('hidden');
+            
+            if (speakerEnabled) speakText('Profile editing form opened');
+        }
+
+        function addAnotherBankAccount() {
+            const bankOptions = [
+                '1. State Bank of India',
+                '2. HDFC Bank',
+                '3. ICICI Bank',
+                '4. Axis Bank',
+                '5. Kotak Mahindra Bank',
+                '6. Punjab National Bank',
+                '7. Bank of Baroda',
+                '8. Canara Bank'
+            ];
+            
+            const choice = prompt(Add Another Bank Account:\n\n${bankOptions.join('\n')}\n\nEnter bank number (1-8) or press Cancel:);
+            
+            if (choice && choice >= '1' && choice <= '8') {
+                const bankName = bankOptions[parseInt(choice) - 1].substring(3);
+                const proceed = confirm(You selected ${bankName}.\n\nTo add this bank account, you will need:\n• Account Number\n• IFSC Code\n• Account Holder Name\n• Debit Card Details\n\nProceed to add ${bankName}?);
+                
+                if (proceed) {
+                    alert(Adding ${bankName} Account:\n\n1. Enter account details\n2. Verify with debit card\n3. Complete OTP verification\n4. Set transaction PIN\n\nThis process will take 2-3 minutes.);
+                    if (speakerEnabled) speakText(Starting process to add ${bankName} account);
+                } else {
+                    if (speakerEnabled) speakText('Bank account addition cancelled');
+                }
+            } else if (choice) {
+                alert('Invalid bank selection.');
+            }
+        }
+        
+        // Modal control functions
+        function closeQRModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
+            if (speakerEnabled) speakText('QR code closed');
+        }
+        
+        function shareQRCode() {
+            const name = userData.accountHolderName || 'User';
+            const upiId = ${name.toLowerCase().replace(/\s+/g, '')}@securepay;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Payment QR Code',
+                    text: Scan this QR code to pay ${name} (${upiId}),
+                });
+            } else {
+                alert('QR Code shared! (In a real app, this would share the QR code image)');
+            }
+            if (speakerEnabled) speakText('QR code shared');
+        }
+        
+        function downloadQRCode() {
+            alert('QR Code saved to gallery! (In a real app, this would save the QR code image to device)');
+            if (speakerEnabled) speakText('QR code saved to device');
+        }
+        
+        function closeProfileEditModal() {
+            document.getElementById('profile-edit-modal').classList.add('hidden');
+            if (speakerEnabled) speakText('Profile editing cancelled');
+        }
+        
+        function saveProfile() {
+            const newName = document.getElementById('edit-name').value.trim();
+            const newEmail = document.getElementById('edit-email').value.trim();
+            
+            if (!newName) {
+                alert('Please enter a valid name.');
+                return;
+            }
+            
+            if (!newEmail || !newEmail.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // Update user data
+            userData.accountHolderName = newName;
+            
+            // Update throughout the app
+            updateUserDataThroughoutApp();
+            
+            // Close modal
+            closeProfileEditModal();
+            
+            alert('Profile updated successfully!');
+            if (speakerEnabled) speakText('Profile updated successfully');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97313105077e29ef',t:'MTc1NTg1MzM0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
