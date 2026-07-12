@@ -1,12 +1,12 @@
 # SecurePay Transaction System
 
-## Project Overview
+## 📌 Project Overview
 
 SecurePay is a secure digital payment system developed as an academic project. It demonstrates a complete digital payment workflow, including user authentication, OTP verification, bank account linking, UPI PIN setup, biometric authentication concepts, and voice-assisted navigation.
 
 The project aims to improve secure and accessible digital transactions using modern web technologies.
 
-## Features
+## ✨ Features
 
 - User Registration and Login
 - Mobile Number & OTP Verification
@@ -17,12 +17,22 @@ The project aims to improve secure and accessible digital transactions using mod
 - Multi-language Support
 - Secure Payment Workflow
 
-## Technologies Used
+## 📷 Screenshots 
+
+All application screenshots are available in the 'SPscreenshots' folder 
+
+## 🔧Technologies Used
 
 • HTML
 • CSS
 • JavaScript
 • Text-to-Speech
+
+## ⚙️ How to Run
+
+1. Download the repository.
+2. Open index.htmlbin a browser.
+3. Explore the SecurePay workflow 
 
 ## Future Backend Technologies 
 
@@ -53,6 +63,11 @@ My contributions included:
 - Connect to a database
 - Improve UI/UX
 - Add real payment gateway simulation
+
+  ## Project Status
+
+  Frontend Prototype Completed ✅
+  Backend Development Planned🔄
 
 ## Contact
 
